@@ -13,10 +13,6 @@ bikeMe.Models.Location.prototype = {
     this.latitude  = attributes.latitude;
     this.address   = attributes.address;
     this.found     = false;
-
-    this.onFetchCoordinatesSuccess   = _.bind(this.onFetchCoordinatesSuccess, this);
-    this.onCurrentCoordinatesSuccess = _.bind(this.onCurrentCoordinatesSuccess, this);
-    this.afterCompleteFetching = _.bind(this.afterCompleteFetching, this);
   },
 
   locate: function () {
@@ -28,65 +24,33 @@ bikeMe.Models.Location.prototype = {
   },
 
   fetchCoordinates: function () {
-    var geocodeUrl = 'https://maps.googleapis.com/maps/api/geocode/json';
+    var me = this,
+        geocodeUrl = 'http://open.mapquestapi.com/geocoding/v1/address';
 
     var data = {
-      address    : this.address +", Tel Aviv",
-      components : 'country:IL',
-      language   : 'en',
-      region     : 'il',
-      sensor     : false,
-      bounds     : "32.02925310,34.74251590|32.1466110,34.85197610"
+      location    : this.address +", Tel Aviv",
+      key: "Fmjtd%7Cluub2du1nu%2C8a%3Do5-9u2slw ",
+      country: "IL",
+      inFormat: "kvp",
+      outFormat: "json"
     };
 
-    $.ajax({
-      url      : geocodeUrl,
-      type     : 'GET',
-      dataType : 'json',
-      data     : data,
-      complete : this.afterCompleteFetching,
-      error    : this.onFetchCoordinatesError,
-      success  : this.onFetchCoordinatesSuccess
-    });
-  },
-
-  onFetchCoordinatesSuccess: function (data) {
-    var result = _.first(data.results);
-    if (data.results.length > 1)
-    {
-      var isCorrectAddress = confirm("Is this the address you were looking for?\n"+ result.formatted_address);
-      if (isCorrectAddress==false){
-        this.found = false;
-        return;
-      }
-    }
-
-    this.longitude = result.geometry.location.lng;
-    this.latitude  = result.geometry.location.lat;
-
-    this.found = true;
-  },
-  
-  onFetchCoordinatesError: function () {
-    $.mobile.loading('hide');
-    bikeMe.alert("The address was not found.","Oh Noes!");
-  },
-
-  afterCompleteFetching: function (jqXHR, textStatus) {
-    if ((textStatus === 'success') && (!_.isUndefined(jqXHR))) {
-      var json_result = JSON.parse(jqXHR.responseText);
-      if (json_result["status"] === "OK") {
-        var location_type = json_result["results"][0]["geometry"]["location_type"];
-
-        if (location_type === "APPROXIMATE" || !this.found) {
+    $.getJSON(geocodeUrl, data).then(function (result) {
+        if (result.info.statuscode != 200) {
           $.mobile.loading('hide');
-          bikeMe.alert("The address was not found.","Oh Noes!");
+          bikeMe.alert("Problem loading adress:" + result.info.messages[0] ,"Oh Noes!");
+          return;
         }
-        else {
-          radio('locationFound').broadcast();
-        }
-      }
-    }
+
+        var location = results.results.locations[0];
+
+        me.longitude = location.latLang.lng;
+        me.latitude  = location.latLang.lat;
+
+        me.found = true;
+        console.log(me);
+        radio('locationFound').broadcast();
+      });
   },
 
   currentCoordinates: function () {

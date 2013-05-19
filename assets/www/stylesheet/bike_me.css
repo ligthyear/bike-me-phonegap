@@ -101,3 +101,7 @@ body {
   -webkit-border-radius: .6em;
   border-radius: .6em;
 }
+
+#mapLayer {
+    height: 500px; /* FIXME: there is something wrong with this*/
+}

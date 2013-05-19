@@ -9,7 +9,7 @@ bikeMe = {
 
     this.searchView = new bikeMe.Views.Search();
     this.mapView    = new bikeMe.Views.Map();
-    this.mapView.initializeGoogleMap();
+    this.mapView.initializeOpenStreetMap();
   },
 
   namespace: function (namespace) {

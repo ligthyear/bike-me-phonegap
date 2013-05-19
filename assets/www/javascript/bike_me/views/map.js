@@ -7,14 +7,13 @@ bikeMe.Views.Map = function () {
 bikeMe.Views.Map.prototype = {
   initialize: function () {
     this.$el        = $('#map');
-    this.$googleMap = $('#googleMap');
     this.$routeInfo = $('#routeInfo');
     this.$walkingDistanceInfo = $('#walkingDistance');
     this.$cyclingDistanceInfo = $('#cyclingDistance');
     this.$totalTimeInfo = $('#totalTime');
     this.$previousRouteButton = $('#previousRoute');
     this.$nextRouteButton = $('#nextRoute');
-    this.$routesIndexInfo = $('#routesIndex')
+    this.$routesIndexInfo = $('#routesIndex');
     this.$routesInfoButton = $('#directionsButton');
     this.popupScroll = new iScroll('directionWrapper');
 
@@ -33,7 +32,25 @@ bikeMe.Views.Map.prototype = {
     this.updateDirections = _.bind(this.updateDirections, this);
   },
 
+  initializeOpenStreetMap: function() {
+    // create the tile layer with correct attribution
+    if (!this.map) this.initializeLeafletMap();
+    var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    var osmAttrib='Map data © OpenStreetMap contributors';
+    var osm = new L.TileLayer(osmUrl, {minZoom: 10, maxZoom: 20, attribution: osmAttrib});  
+    // start the map in South-East England
+    this.map.addLayer(osm);
+  },
+
+  initializeLeafletMap: function() {
+    this.map = new L.Map('mapLayer');
+    this.map.setView(new L.LatLng(32.066, 34.783), 14);
+  },
+
   initializeGoogleMap: function () {
+    if (!this.map) this.initializeLeafletMap();
+    var googleLayer = new L.Google('ROADMAP');
+    this.map.addLayer(googleLayer);
     if (_.isUndefined(this.googleMap)){
       this.googleMap = new google.maps.Map(this.$googleMap[0], this.options);
 
@@ -356,7 +373,7 @@ bikeMe.Views.Map.prototype = {
   },
 
   routeIndexClasses: ['routeOne', 'routeTwo',  'routeThree',  'routeFour',  'routeFive',  'routeSix',  'routeSeven',  'routeEight',  'routeNine'],
-
+  /*
   options: {
     center           : new google.maps.LatLng(32.066181,34.77761),
     disableDefaultUI : true,
@@ -433,4 +450,5 @@ bikeMe.Views.Map.prototype = {
       backgroundClassName: 'infoWindowBackground',
       arrowStyle: 0
     }
+    */
 };
