@@ -25,32 +25,31 @@ bikeMe.Models.Location.prototype = {
 
   fetchCoordinates: function () {
     var me = this,
-        geocodeUrl = 'http://open.mapquestapi.com/geocoding/v1/address';
+        // stupid escaping problem ...
+        geocodeUrl = 'http://open.mapquestapi.com/geocoding/v1/address?key=Fmjtd%7Cluub2du1nu%2C8a%3Do5-9u2slw';
 
     var data = {
       location    : this.address +", Tel Aviv",
-      key: "Fmjtd%7Cluub2du1nu%2C8a%3Do5-9u2slw ",
       country: "IL",
       inFormat: "kvp",
       outFormat: "json"
     };
 
     $.getJSON(geocodeUrl, data).then(function (result) {
-        if (result.info.statuscode != 200) {
-          $.mobile.loading('hide');
-          bikeMe.alert("Problem loading adress:" + result.info.messages[0] ,"Oh Noes!");
-          return;
-        }
+      if (result.info.statuscode) {
+        $.mobile.loading('hide');
+        bikeMe.alert("Problem loading adress:" + result.info.messages[0] ,"Oh Noes!");
+        return;
+      }
 
-        var location = results.results.locations[0];
+      var location = result.results[0].locations[0];
 
-        me.longitude = location.latLang.lng;
-        me.latitude  = location.latLang.lat;
+      me.longitude = location.latLng.lng;
+      me.latitude  = location.latLng.lat;
 
-        me.found = true;
-        console.log(me);
-        radio('locationFound').broadcast();
-      });
+      me.found = true;
+      radio('locationFound').broadcast();
+    });
   },
 
   currentCoordinates: function () {
