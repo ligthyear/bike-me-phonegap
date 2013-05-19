@@ -51,33 +51,6 @@ bikeMe.Views.Map.prototype = {
     if (!this.map) this.initializeLeafletMap();
     var googleLayer = new L.Google('ROADMAP');
     this.map.addLayer(googleLayer);
-    if (_.isUndefined(this.googleMap)){
-      this.googleMap = new google.maps.Map(this.$googleMap[0], this.options);
-
-      this.googleDirectionsService = new google.maps.DirectionsService();
-
-      this.directionsRenderer = new google.maps.DirectionsRenderer();
-
-      // Create the info window
-      this.infoWindow = new InfoBubble(this.infoWindowOptions);
-      this.closeInfoWindow = _.bind(this.closeInfoWindow, this);
-
-      // Create markers for the dffierent location
-      this.originMarker = new google.maps.Marker();
-      this.destinationMarker = new google.maps.Marker();
-      this.originStationMarker = new google.maps.Marker();
-      this.destinationStationMarker = new google.maps.Marker();
-
-      this.originStationsMarkers = [];
-      for (var i=0;i<4;i++) {
-        this.originStationsMarkers[i] = new google.maps.Marker();
-      }
-
-      this.destinationStationsMarkers = [];
-      for (var i=0;i<4;i++) {
-        this.destinationStationsMarkers[i] = new google.maps.Marker();
-      }
-    }
   },
 
   onSearchSuccess: function (routes) {
