@@ -13,6 +13,8 @@ bikeMe.Models.Location.prototype = {
     this.latitude  = attributes.latitude;
     this.address   = attributes.address;
     this.found     = false;
+    this.onCurrentCoordinatesSuccess = this.onCurrentCoordinatesSuccess.bind(this);
+    this.onCurrentCoordinatesFailure = this.onCurrentCoordinatesFailure.bind(this);
   },
 
   locate: function () {
@@ -81,7 +83,7 @@ bikeMe.Models.Location.prototype = {
 
   getLatLng: function() {
     if (_.isUndefined(this.LatLng)){
-      this.LatLng = new google.maps.LatLng(this.latitude, this.longitude);
+      this.LatLng = new L.LatLng(this.latitude, this.longitude);
     }
     return this.LatLng;
   }
